@@ -1,0 +1,14 @@
+{% extends "nav.html" %}
+
+{% block body %}
+<br />
+<br />
+<div class="font-bold mx-10 text-2xl">List of Rooms</div>
+<br />
+    {% for room in rooms %}
+    <a href="/room/{{room.name}}">
+<div class="shadow-lg h-20 m-10 p-10 text-xl align-middle w-2/4" style="background-color: rgb(75 85 99); color: white;text-align:center; ">
+    {{room.name}}
+</div></a>
+    {% endfor %}
+{%endblock%}

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en" style="height:100%;">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet">
+    <title>Chat Rooms</title>
+    <style>
+        
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        @tailwind base;
+        @tailwind components;
+        @tailwind utilities;
+
+        nav {
+            background-color: #333;
+            color: #fff;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+            nav h1 {
+                margin: 0;
+                font-size: 24px;
+            }
+
+            nav ul {
+                list-style-type: none;
+                margin: 0;
+                padding: 0;
+                display: flex;
+            }
+
+                nav ul li {
+                    margin-right: 20px;
+                }
+
+                    nav ul li a {
+                        color: #fff;
+                        text-decoration: none;
+                        font-size: 18px;
+                        padding: 10px;
+                        transition: all 0.3s ease;
+                    }
+
+                        nav ul li a:hover {
+                            background-color: #555;
+                            border-radius: 5px;
+                        }
+    </style>
+</head>
+<body style="height:100%;">
+    <nav>
+        <h1><img style="margin-top:5px;margin-right:10px;"src="https://cdn4.iconfinder.com/data/icons/black-white-social-media/32/email_mail_envelope_send_message-32.png" /></h1>
+        <ul>
+            <li><a href="{%url 'rooms'%}">Rooms</a></li>
+            <li><a href="{%url 'createroom'%}"> Create Room</a></li>
+            <li><a href="{%url 'logout'%}"> logout</a></li>
+        </ul>
+            
+    </nav>
+    {% block body %}
+    {% endblock %}
+    <!-- Your chat room content would go here -->
+
+</body>
+</html>

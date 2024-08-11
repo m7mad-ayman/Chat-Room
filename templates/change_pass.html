@@ -1,0 +1,18 @@
+{% extends "nav.html" %}
+
+{% block body %}
+<br />
+<br />
+<div class="font-bold mx-10 text-2xl" style="max-width: fit-content;margin-left: auto;margin-right: auto;">Change Password For [ {{chatroom.name}} ] </div>
+<br />
+<form method="POST" action="/change/{{chatroom.id}}">
+    {% csrf_token %} 
+    <input type="password" name="password" class="bg-gray-50 border border-black text-gray-900 text-m rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" style="width:25%;height:40px;margin:auto;	margin-top: 3%;padding-left: 10px" placeholder="Room New Password"> 
+    <div style="text-align: center;">
+        <div class="text-center justify-start my-2 space-x-3">
+            <p class="text-base text-red" style="color:firebrick;">{{message}}</p>
+        </div>
+    <button type="submit" class="text-white bg-black hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-m px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700" style="width:8%;height:45px;margin:auto;margin-top: 30px;">Change</button>
+    </div>
+</form>
+{%endblock%}

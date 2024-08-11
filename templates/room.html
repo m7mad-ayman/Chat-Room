@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en" style="height:100%;">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet">
+    <title>Chat Rooms</title>
+    <style>
+        
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        @tailwind base;
+        @tailwind components;
+        @tailwind utilities;
+
+        nav {
+            background-color: #333;
+            color: #fff;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+            nav h1 {
+                margin: 0;
+                font-size: 24px;
+            }
+
+            nav ul {
+                list-style-type: none;
+                margin: 0;
+                padding: 0;
+                display: flex;
+            }
+
+                nav ul li {
+                    margin-right: 20px;
+                }
+
+                    nav ul li a {
+                        color: #fff;
+                        text-decoration: none;
+                        font-size: 18px;
+                        padding: 10px;
+                        transition: all 0.3s ease;
+                    }
+
+                        nav ul li a:hover {
+                            background-color: #555;
+                            border-radius: 5px;
+                        }
+    </style>
+</head>
+<body style="height:100%;">
+    <nav>
+        <h1><img style="margin-top:5px;margin-right:10px;"src="https://cdn4.iconfinder.com/data/icons/black-white-social-media/32/email_mail_envelope_send_message-32.png" /></h1>
+        <ul>
+            
+            
+            <li><a href="{%url 'rooms'%}">Rooms</a></li>
+            {%if request.user == chatroom.admin %}
+            <li><a href="/delete/{{chatroom.id}}">Delete Room</a></li>
+            <li><a href="/change/{{chatroom.id}}">Change Password</a></li>
+
+            {%endif%}
+            <li><a href="{%url 'logout'%}"> logout</a></li>
+        </ul>
+            
+    </nav>
+
+
+
+<div class="container" style="display: flex;justify-content: center;width:30%;height:60%;margin:auto;margin-top:3%">  
+<div class="shadow-lg" style="position: fixed;width:30%;height: 7%; background-color: #262626; border:solid 2px white;text-align: center; color: white; border-radius: 10px; font-size: 25px; text-transform: capitalize; ">{{chatroom.name}}'s Room</div>  
+<div class="base-container overscroll-y-auto" id="messages" style="position: relative;  margin-left: auto; margin-right: auto; margin-top:10.7%; width: 100%; height: 100%; border: solid 2px white; padding: 0; overflow-y: scroll; ">
+    
+    {% for message in chatmessages %}
+    {% if message.user == request.user %}
+    <div class="my-text-container" style="display: flex; flex-direction: column; align-items: flex-end;">
+        <div class="my-text" style=" background: linear-gradient( 180deg, rgba(139, 47, 184, 1) 0%, rgba(103, 88, 205, 1) 51%, rgba(89, 116, 219, 1) 92% ) no-repeat center; background-attachment: fixed; color: #fff; border-radius: 0.5rem 0.2rem 0.2rem 0.5rem; height: fit-content; width: fit-content; padding: 0.5rem 1rem; margin: 0.12rem 0.5rem;">{{message.content}}</div>
+    </div>
+    {%else%}
+    <div class="friend-text-container" style="width: 80%; display: flex; flex-direction: column;">
+        <div class="friend-text" style="background: rgb(75 85 99); border-radius: 0.5rem; color: #fff; height: fit-content; width: fit-content; padding: 0.5rem 1rem; margin: 0.12rem 0.5rem;"><div style="color: #b3b3b3 ">{{message.user.username}}</div>{{message.content}}</div>
+    </div>
+    {%endif%}
+    {% endfor %}
+
+</div></div>
+    <form method="POST">
+        {% csrf_token %}
+        <div style="display: flex;justify-content: center;width:30%;height:35px;margin:auto;margin-top:3.2%">
+            <input style="width: 80%; height: 100%; float:left; border-radius: 5px; margin: auto; display: block; font-size: 16px; border: solid 2px black;padding-left: 10px;" placeholder="Type your message ..." id="input-message" />
+            <button id="send-button" style="width: 20%;height: 100%;float:right; font-size: 16px; border: solid 2px black;border-radius:5px; background-color: rgb(75 85 99); color: white; " type="submit">send</button>
+        </div>
+    </form>
+
+
+    {{ chatroom.slug|json_script:"roomname" }}
+    {{ request.user.username|json_script:"username" }}
+    <script>
+        const roomname = JSON.parse(document.getElementById('roomname').textContent)
+        const chatSocket = new WebSocket('ws://' + window.location.host + '/ws/' + roomname + '/')
+        const username = JSON.parse(document.getElementById('username').textContent)
+        chatSocket.onopen = function (e) {
+            console.log('WebSocket connection established.');
+        };
+
+        chatSocket.onerror = function (error) {
+            console.log('WebSocket connection error:', error);
+        };
+
+        chatSocket.onmessage = function (e) {
+            const data = JSON.parse(e.data)
+            if (data.message) {
+                if (data.username == username) {
+                    let html = '<div class="my-text-container" style="display: flex; flex-direction: column; align-items: flex-end;"> ' +
+                        ' <div class="my-text" style=" background: linear-gradient( 180deg, rgba(139, 47, 184, 1) 0%, rgba(103, 88, 205, 1) 51%, rgba(89, 116, 219, 1) 92% ) no-repeat center; background-attachment: fixed; color: #fff; border-radius: 0.5rem 0.2rem 0.2rem 0.5rem; height: fit-content; width: fit-content; padding: 0.5rem 1rem; margin: 0.12rem 0.5rem;">' + data.message + '</div></div>'
+                    document.getElementById('messages').innerHTML += html
+                }
+                else {
+                    console.log(data.username)
+                    let html = '<div class="friend-text-container" style="width: 80%; display: flex; flex-direction: column;">' +
+                        '<div class="friend-text" style="background: rgb(75 85 99); border-radius: 0.5rem; color: #fff; height: fit-content; width: fit-content; padding: 0.5rem 1rem; margin: 0.12rem 0.5rem;"><div style="color: #b3b3b3 ">' +data.username +'</div>'+
+                        data.message+'</div></div>'
+                    document.getElementById('messages').innerHTML += html
+                }
+            } else {
+                console.log("message in empty")
+            }
+            Scroll()
+        }
+        chatSocket.onclose = function (e) {
+            console.log("socket is closed")
+        }
+        document.getElementById('send-button').onclick = function (e) {
+            e.preventDefault()
+            let message_input = document.getElementById('input-message')
+            let message = message_input.value
+            const roomname = JSON.parse(document.getElementById('roomname').textContent)
+            const username = JSON.parse(document.getElementById('username').textContent)
+            
+
+            chatSocket.send(JSON.stringify({
+                "message": message,
+                "username": username,
+                "roomname": roomname,
+
+
+            }))
+            message_input.value = ''
+
+        }
+        function Scroll() {
+            var element = document.getElementById("messages");
+            element.scrollTop = element.scrollHeight;
+        }
+        Scroll()
+    </script>
+</body>
+</html>
